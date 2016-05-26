@@ -5,16 +5,6 @@
 @endsection
 
 @section('aside')
-    @if ( count( $errors ) > 0 )
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ( $errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <h3>Добавить ссылку</h3>
     {{ Form::open() }}
     <div class="input-group">
@@ -36,6 +26,9 @@
                 url
             </th>
             <th>
+                эффективность
+            </th>
+            <th>
                 действие
             </th>
         </thead>
@@ -50,7 +43,10 @@
                         <a style="font-size: 11px" href="{{ $comunity->url }}">{{ $comunity->url }}</a>
                     </td>
                     <td>
-                        <a href="#" class="btn btn-danger btn-xs">удалить</a>
+                        <span class="badge">{{ $comunity->efficiency }}</span>
+                    </td>
+                    <td>
+                        <a href={{ route( 'comunity.delete', $comunity->id ) }} class="btn btn-danger btn-xs">удалить</a>
                     </td>
                 </tr>
             @endforeach

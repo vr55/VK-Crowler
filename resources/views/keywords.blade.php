@@ -36,6 +36,9 @@
                 url
             </th>
             <th>
+                эффективность
+            </th>
+            <th>
                 действие
             </th>
         </thead>
@@ -49,7 +52,10 @@
                         {{ $word->keyword }}
                     </td>
                     <td>
-                        <a href="#" class="btn btn-danger btn-xs">удалить</a>
+                        <span class="badge">{{ $word->efficiency }}</span>
+                    </td>
+                    <td>
+                        <a href={{ route( 'keyword.delete', $word->id ) }} class="btn btn-danger btn-xs">удалить</a>
                     </td>
                 </tr>
             @endforeach

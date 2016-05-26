@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Curl;
 use Mail;
+use DB;
 
 use \App\Models\mcPosts as mcPost;
 use \App\Models\mcComunities as mcComunities;
@@ -26,23 +27,22 @@ class mcUpdateController extends mcBaseController
             $comunity->url = str_replace( 'https://vk.com/', '', $comunity->url );
 
             $content = Curl::to('https://api.vk.com/method/wall.get' )
-                        ->withData([ 'domain' => $comunity->url, 'v' => '5.52', 'count' => '15' ] )
+                        ->withData([ 'domain' => $comunity->url, 'v' => '5.52', 'count' => '20' ] )
                         ->withOption( 'USERAGENT', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; ru-RU; rv:1.7.12) Gecko/20050919 Firefox/1.0.7' )
                         ->get();
 
             $content = json_decode( $content );
+            if ( isset( $content->error ) )
+                continue;
 
-            if ( !isset( $content->error ) )
+            foreach( $content->response->items as $item )
             {
-                foreach( $content->response->items as $item )
+                if ( !isset( $item->is_pinned) )
                 {
-                    if ( !isset( $item->is_pinned) )
-                    {
-                        $item->owner_name = $comunity->name;
-                        array_push( $data, $item );
-                    }
+                    $item->owner_name = $comunity->name;
+                    $item->comunity_id = $comunity->id;
+                    array_push( $data, $item );
                 }
-
             }
 
             usleep( rand( 500000, 2000000 ) );
@@ -52,34 +52,32 @@ class mcUpdateController extends mcBaseController
         foreach( $data as $item )
         {
             $post = mcPost::select('*')->where( 'vk_id', '=', $item->id )->first();
+
+            //пост уже обработали, пропускаем его
             if ( $post )
                 continue;
 
-            $check = $this->analyse_data( $item, $keywords );
-            if ( $check == false )
+            if ( $this->analyse_data( $item, $keywords ) == false )
                 continue;
-            //var_dump( $item->text );
-
-            $id = $item->id;
-            $from_id = $item->from_id;
-            $owner_id = $item->owner_id;
-            $signer_id = isset( $item->signer_id ) ? $item->signer_id : false;
-            $date = $item->date;
+/*
             $post_type = $item->post_type;
-            $text = $item->text;
             $comments = $item->comments;
-
+*/
             $post = new mcPost();
-            $post->vk_id = $id;
-            $post->owner_id = $owner_id;
-            $post->from_id = $from_id;
-            $post->signer_id = $signer_id;
-            $post->text = $text;
-            $post->date = $date;
+            $post->vk_id = $item->id;
+            $post->owner_id = $item->owner_id;
+            $post->from_id = $item->from_id;
+            $post->signer_id = isset( $item->signer_id ) ? $item->signer_id : false;
+            $post->text = $item->text;
+            $post->date = $item->date;
             $post->owner_name = $item->owner_name;
             $post->save();
+
+            //увеличиваем счетчик эффективности на 1
+            mcComunities::find( $item->comunity_id )->increment('efficiency');
+
         }
-        return view( 'data' );
+        return redirect()->route( 'home' )->with( 'msg', 'Обновлено' );
     }
 
 
@@ -89,12 +87,11 @@ class mcUpdateController extends mcBaseController
 
         foreach( $keywords as $word )
         {
-//var_dump( $item->text );
             $pattern = '/\s' . $word->keyword . '\s/i';
             if( preg_match( $pattern, $item->text ) )
             {
                 $item->text = preg_replace( $pattern, '<b> ' . $word->keyword . ' </b>', $item->text );
-            //    var_dump( $text );
+                $word->increment( 'efficiency' );
                 return true;
             }
 
@@ -110,15 +107,18 @@ class mcUpdateController extends mcBaseController
         return false;
     }
 
-    public function sendMessage( /*$id, $message*/ )
+    public function sendMessage( $id, $message )
     {
         //*https://api.vk.com/method/messages.send?user_id=6269901&message=habrahabr&v=5.37&access_token=000000*/
         //token - 96b974f939195cfd6660abb4073b43f8d3fb41529ffe9b287137953a776a52e36b5e4ee089027548c4842
+        $settings = mcSettings::first();
+        if ( !isset( $settings->access_token ) )
+            return false;
 
         $response = Curl::to('https://api.vk.com/method/messages.send')
-                ->withData(['domain' => 'volosenkov', 'message' => 'test', 'v' => '5.52', 'access_token' => '96b974f939195cfd6660abb4073b43f8d3fb41529ffe9b287137953a776a52e36b5e4ee089027548c4842'])
+                ->withData(['user_id' => $id, 'message' => $message, 'v' => '5.52', 'access_token' => $settings->access_token ])
                 ->post();
-/*
+
         $response = json_decode( $response );
 
         if ( isset( $response->error ) )
@@ -126,12 +126,18 @@ class mcUpdateController extends mcBaseController
             return false;
         }
 
-        return true;*/
+        return true;
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function sendMail()
     {
-        Mail::queue('emails.welcome', ['key' => 'value'], function($message)
+        Mail::queue( 'emails.welcome', ['key' => 'value'], function($message)
         {
           $message->to('vr5@bk.ru', 'John Smith')->subject('Welcome!');
           $message->from( 'admin@promo.monochromatic.ru', 'admin');

@@ -19,25 +19,48 @@
 <body>
 
 @include('layouts.nav')
+<div id="wrap">
+	<div class="container">
 
-<div class="container">
-
-<div class="row">
-	<div class="col-md-3">
-		@yield('aside')
-	</div>
-	<div class="col-md-9">
 	<div class="row">
-	@yield('content')
+		<div class="col-md-3">
+			@yield('aside')
+		</div>
+		<div class="col-md-9">
+		<div class="row">
+			@if ( session()->has('msg') )
+				<div class="alert alert-danger" role="alert">
+					{{ session('msg') }}
+				</div>
+			@endif
+			@if ( count( $errors ) > 0 )
+				<div class="alert alert-danger">
+					<ul>
+						@foreach ( $errors->all() as $error)
+							<li>{{ $error }}</li>
+						@endforeach
+					</ul>
+				</div>
+			@endif
+		@yield('content')
+		</div>
+		</div>
 	</div>
+
 	</div>
 </div>
+<footer role="contentinfo" class="site-footer" id="colophon">
+  <div class="copyright">
+    <div class="container">
+      <div class="row copyright-img">
+        <div class="col-lg-4 col-sm-4">
+			<a href="http://www.monochromatic.ru"><img src="http://www.monochromatic.ru/mc_logo32.png" alt="monochromatic logo" /></a> Copyright © 2016-{{date('Y')}} <a href="http://www.monochromatic.ru">Monochromatic</a>
+		</div>
+      </div>
+    </div>
+  </div>
+</footer>
 
-
-</div>
-<div class="footer navbar-fixed-bottom" style="height:25px">
-	footer
-</div>
 </body>
 
 </html>

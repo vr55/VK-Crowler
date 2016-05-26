@@ -34,12 +34,16 @@
 
         <div class="panel panel-default">
           <div class="panel-heading">
-              <a href="https://vk.com/wall<?php print $post->owner_id . '_' . $post->vk_id?>">{{ $post->owner_name }}</a>
-          </div>
-          <div style="padding-left: 15px; padding-top:5px">
+              <a target="_blank" href="https://vk.com/wall<?php print $post->owner_id . '_' . $post->vk_id?>">{{ $post->owner_name }}</a>
               @if( date( 'd m Y', $post->date ) == date( 'd m Y' ) )
               <span class="label label-success">новый</span>
               @endif
+              <div style="font-size: 12px; color: #a9a9a9">
+                опубликовано: {{ date( 'd F Y' ,$post->date )}}
+              </div>
+          </div>
+          <div style="padding-left: 15px; padding-top:5px">
+
               <span class="label label-primary">отправлено</span>
           </div>
 
@@ -50,10 +54,7 @@
           </div>
           <div class="panel-footer">
               <div class="row">
-                  <div class="col-md-8" style="font-size: 12px">
-                    Дата публикации: {{ date( 'd F Y' ,$post->date )}}
-                  </div>
-                  <div class="col-md-4">
+                  <div class="col-md-12">
                     @if( $post->from_id > 0 )
                         <a href="#" class="btn btn-primary btn-xs">отправить сообщение</a>
                     @elseif( $post->signer_id != 0 )

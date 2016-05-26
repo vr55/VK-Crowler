@@ -41,6 +41,15 @@ class mcIndexController extends mcBaseController
 
         return redirect()->route('keywords');
     }
+    public function getDeleteKeyword( Request $request, $id )
+    {
+        $keyword = mcKeywords::find( $id );
+
+        if ( $keyword )
+            $keyword->delete();
+
+        return redirect()->route( 'keywords' )->with( 'msg', 'Удалено' );
+    }
 
     public function getComunities()
     {
@@ -76,6 +85,15 @@ class mcIndexController extends mcBaseController
         return redirect()->route( 'comunities' );
     }
 
+    public function getDeleteComunity( Request $request, $id )
+    {
+        $comunity = mcComunities::find( $id );
+        if ( $comunity )
+            $comunity->delete();
+
+        return redirect( 'comunities' )->with( 'msg', 'Удалено' );
+    }
+
     public function getSettings()
     {
         $settings = mcSettings::first();
@@ -98,7 +116,7 @@ class mcIndexController extends mcBaseController
             mcSettings::first()->update( $request->except( '_token' ) );
         }
 
-        return redirect()->route('settings');
+        return redirect()->route('settings')->with( 'msg', 'Сохранено' );
     }
 
     public function getProposals()

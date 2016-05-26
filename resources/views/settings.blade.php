@@ -5,23 +5,22 @@
 @endsection
 
 @section('aside')
-    @if ( count( $errors ) > 0 )
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ( $errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 @endsection
 
 @section('content')
 {{ Form::model( $settings ) }}
     <div class="table-responsive">
         <h2>Вконтакте</h2>
-      <table class="table table-hover table-responsive">
+      <table class="table table-responsive">
         <tbody>
+            <tr>
+                <td>
+                    {{ Form::label('Вконтакте: Зарегистрировать новое приложение ') }}
+                </td>
+                <td>
+                    <a target="_blank" href="https://vk.com/apps?act=manage">Ссылка</a>
+                </td>
+            </tr>
             <tr>
                 <td>
                     {{ Form::label('Вконтакте: id приложения') }}
@@ -56,7 +55,38 @@
                     </div>
                 </td>
                 <td>
-                    {{ Form::checkbox( 'auto_send' )}}
+                    {!! Form::hidden('send_proposal', '0') !!}
+                    {!! Form::checkbox( 'send_proposal', '1' ) !!}
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <h2>Почта</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ Form::label( 'email администратора' ) }}
+                    <div style="font-size:10px; color: #777777; width:250px">на этот email будет отправляться вся информация</div>
+                </td>
+                <td>
+                    {{ Form::text( 'admin_email', null ) }}
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <h2>Параметры просмотра</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ Form::label( 'Глубина сканирования' ) }}
+                    <div style="font-size:10px; color: #777777; width:250px">количество последних записей из каждого сообщества, которые будут сканироваться</div>
+                </td>
+                <td>
+                    {{ Form::selectRange( 'scan_depth', 1, 50 ) }}
                 </td>
             </tr>
         </tbody>
@@ -64,23 +94,6 @@
 
     </div>
 
-    <div class="table-responsive">
-        <h2>Почта</h2>
-      <table class="table table-hover">
-        <tbody>
-            <tr>
-                <td>
-                    {{ Form::label( 'email администратора' ) }}
-                    <div style="font-size:10px; color: #777777">на этот email будет отправляться вся информация</div>
-                </td>
-                <td>
-                    {{ Form::text( 'admin_email', null ) }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    </div>
          {{ Form::submit( 'Сохранить', ['class' =>'btn btn-primary', 'style' => 'margin-top: 10px; margin-bottom: 10px'] ) }}
 {{ Form::close() }}
 @endsection
