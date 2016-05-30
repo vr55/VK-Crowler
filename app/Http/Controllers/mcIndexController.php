@@ -15,20 +15,36 @@ use App\Models\mcProposals as mcProposals;
 
 class mcIndexController extends mcBaseController
 {
-
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getIndex()
     {
         $posts = mcPosts::orderBy( 'date', 'desc' )->paginate( 15 );
         return view( 'index', ['posts' => $posts] );
     }
 
-
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getKeywords()
     {
         $keywords = mcKeywords::paginate(15);
         return view( 'keywords', ['keywords' => $keywords] );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function postKeywords( Request $request )
     {
         $this->validate( $request, [
@@ -41,6 +57,7 @@ class mcIndexController extends mcBaseController
 
         return redirect()->route('keywords');
     }
+
     public function getDeleteKeyword( Request $request, $id )
     {
         $keyword = mcKeywords::find( $id );
@@ -119,6 +136,12 @@ class mcIndexController extends mcBaseController
         return redirect()->route('settings')->with( 'msg', 'Сохранено' );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getProposals()
     {
         $proposals = mcProposals::paginate( 15 );
@@ -126,6 +149,12 @@ class mcIndexController extends mcBaseController
         return view( 'proposals', ['proposals' => $proposals] );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function postProposals( Request $request )
     {
         $this->validate( $request, [ 'proposal' => 'max:255'] );
@@ -136,6 +165,27 @@ class mcIndexController extends mcBaseController
         return redirect()->route( 'proposal' );
     }
 
+    public function getDeleteProposal( Request $request, $id )
+    {
+        $proposal = mcProposals::findOrFail( $id );
+        $proposal->delete();
+
+        return redirect()->back()->with( 'msg', 'Удалено' );
+    }
+
+    public function getDeletePost( Request $request, $id )
+    {
+        $post = mcPosts::findOrFail( $id );
+        $post->delete();
+        
+        return redirect()->back()->with( 'msg', 'Удалено' );
+    }
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function sendMessage( $id, $message )
     {
         //*https://api.vk.com/method/messages.send?user_id=6269901&message=habrahabr&v=5.37&access_token=000000*/

@@ -19,7 +19,7 @@
     {{ Form::open() }}
     <div class="input-group">
         {{ Form::label('Текст шаблона') }}
-        {{ Form::textarea( 'proposal', '', ['placeholder' => 'Деловое предложениеs', 'style' => 'width: 250px'] ) }}
+        {{ Form::textarea( 'proposal', '', ['placeholder' => 'Деловое предложение', 'style' => 'width: 250px'] ) }}
     </div>
     {{ Form::submit( 'Добавить', ['class' =>'btn btn-primary', 'style' => 'margin-top: 10px; margin-bottom: 10px'] ) }}
     {{Form::close() }}
@@ -49,7 +49,7 @@
                         <div>{{ $proposal->text }}</div>
                     </td>
                     <td>
-                        <a href="#" class="btn btn-danger btn-xs">удалить</a>
+                        <a href={{ route( 'proposal.delete', $proposal->id ) }} class="btn btn-danger btn-xs">удалить</a>
                     </td>
                 </tr>
             @endforeach

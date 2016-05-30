@@ -49,5 +49,8 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Foundation\Http\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'sentinel.admin' => \App\Http\Middleware\SentinelAdmin::class,
+        'sentinel.auth' => \App\Http\Middleware\SentinelAuthenticate::class,
+        'sentinel.guest' => \App\Http\Middleware\SentinelGuest::class,
     ];
 }

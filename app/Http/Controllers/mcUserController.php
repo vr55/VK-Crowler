@@ -12,6 +12,8 @@ use DB;
 use Validator;
 use Mail;
 
+use App\Http\Modes\mcSettings as mcSettings;
+
 class mcUserController extends mcBaseController
 {
     protected $users;
@@ -121,5 +123,45 @@ class mcUserController extends mcBaseController
     {
         Sentinel::logout();
         return redirect()->route('home');
+    }
+
+    public function postRegister( Request $request )
+    {
+        $settings = mcSettings::firstOrFail();
+        if ( isset( $settings->register_deny ) )
+            return redirect()->route( 'login' )->with( 'msg', 'Регистрация новых пользователей запрещеена' );
+            
+        $this->validate( $request, [
+                'uName' => 'required|email',
+                'uPassword' => 'required',
+                'uPasswordConfirm' =>'same:uPassword'
+        ]);
+
+        if (  $user = Sentinel::findByCredentials( [ 'email' => $request->input( 'uName' ) ] ) )
+        {
+            return redirect()->back()->withInput()->with( 'msg', 'Пользователь уже существует' );
+        }
+
+        $credentials = [
+        'email'    => $request->input( 'uName' ),
+        'password' => $request->input( 'uPassword' ),
+        ];
+
+        if ( $user = Sentinel::registerAndActivate( $credentials ))
+        {
+            // Find the role using the role name
+            $usersRole = Sentinel::findRoleByName( 'Users' );
+
+            // Assign the role to the users
+            $usersRole->users()->attach( $user );
+
+            Sentinel::login( $user );
+
+            return redirect()->route( 'home' );
+
+        }
+
+
+
     }
 }

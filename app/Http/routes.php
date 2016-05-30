@@ -11,8 +11,18 @@
 |
 */
 
-Route::group( [], function () {
+Route::group( [ 'middleware' => 'sentinel.guest'], function(){
+	Route::get( 'login', ['as' => 'login', 'uses' => 'mcUserController@getLogin'] );
+	Route::post( 'login', ['as' => 'login', 'uses' => 'mcUserController@postLogin'] );
+
+	Route::get( 'register', ['as' => 'register', function(){ return view('register'); }]);
+	Route::post( 'register', ['as' => 'register', 'uses' => 'mcUserController@postRegister']);
+});
+
+Route::group( [ 'middleware' => 'sentinel.auth'], function () {
 	Route::get( '/', ['as' => 'home', 'uses' => 'mcIndexController@getIndex']);
+	Route::get( 'logout', ['as' => 'logout', 'uses' => 'mcUserController@getLogout'] );
+
     Route::get( 'update', ['as' =>'update', 'uses' => 'mcUpdateController@getData'] );
 
 	Route::get( 'keywords', ['as' => 'keywords', 'uses' => 'mcIndexController@getKeywords']);
@@ -25,14 +35,16 @@ Route::group( [], function () {
 
 	Route::get( 'proposal', ['as' => 'proposal', 'uses' => 'mcIndexController@getProposals'] );
 	Route::post( 'proposal', ['as' => 'proposal', 'uses' => 'mcIndexController@postProposals'] );
+	Route::get( 'proposal/delete/{id}', ['as' =>'proposal.delete', 'uses' => 'mcIndexController@getDeleteProposal'])->where( 'id', '[0-9]+' );
 
 	Route::get( 'settings', ['as' => 'settings', 'uses' => 'mcIndexController@getSettings']);
 	Route::post( 'settings', ['uses' => 'mcIndexController@postSettings']);
 
-	Route::get( 'login', ['as' => 'login', 'uses' => 'mcUserController@getLogin'] );
-	Route::post( 'login', ['as' => 'login', 'uses' => 'mcUserController@postLogin'] );
+	Route::get( 'post/delete/{id}', ['as' => 'post.delete', 'uses' => 'mcIndexController@getDeletePost'] )->where( 'id', '[0-9]+' );
+
 });
+//Route::get( 'mail', ['uses' => 'mcUpdateController@sendMail']);
 /*
 Route::get( 'message', ['uses' => 'mcUpdateController@sendMessage']);
-Route::get( 'mail', ['uses' => 'mcUpdateController@sendMail']);
+
 */

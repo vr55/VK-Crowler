@@ -89,6 +89,21 @@
                     {{ Form::selectRange( 'scan_depth', 1, 50 ) }}
                 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <h2>Пользователи</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ Form::label( 'Запретить регистрацию' ) }}
+                    <div style="font-size:10px; color: #777777; width:250px">Запретить регистрацию новых пользователей</div>
+                </td>
+                <td>
+                    {!! Form::hidden('register_deny', '0') !!}
+                    {!! Form::checkbox( 'register_deny', '1' ) !!}
+                </td>
+            </tr>
         </tbody>
       </table>
 
