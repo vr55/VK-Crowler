@@ -42,10 +42,10 @@
           <div class="panel-footer">
               <div class="row">
                   <div class="col-md-12">
-                    @if( $post->from_id > 0 )
-                        <a href="#" class="btn btn-primary btn-xs">отправить сообщение</a>
-                    @elseif( $post->signer_id != 0 )
-                        <a href="#" class="btn btn-primary btn-xs">отправить сообщение</a>
+                    @if( $post->from_id > 0 && $post->sent == 0 )
+                        <a href={{ route( 'message', $post->from_id ) }} class="btn btn-primary btn-xs">отправить сообщение</a>
+                    @elseif( $post->signer_id != 0 && $post->sent == 0 )
+                        <a href={{ route( 'message', $post->signer_id )}} class="btn btn-primary btn-xs">отправить сообщение</a>
 
                     @endif
                     <a href={{ route( 'post.delete', $post->id ) }} class="btn btn-danger btn-xs">удалить</a>

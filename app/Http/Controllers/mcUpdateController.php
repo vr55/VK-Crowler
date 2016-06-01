@@ -13,6 +13,7 @@ use \App\Models\mcPosts as mcPost;
 use \App\Models\mcComunities as mcComunities;
 use \App\Models\mcKeywords as mcKeywords;
 use \App\Models\mcSettings as mcSettings;
+use \App\Models\mcProposals as mcProposal;
 
 class mcUpdateController extends mcBaseController
 {
@@ -45,7 +46,7 @@ class mcUpdateController extends mcBaseController
                         ->get();
 
             $content = json_decode( $content );
-            if ( isset( $content->error ) )
+            if ( !isset( $content ) || isset( $content->error ) )
                 continue;
 
             foreach( $content->response->items as $item )
@@ -73,6 +74,17 @@ class mcUpdateController extends mcBaseController
             if ( $this->analyse_data( $item, $keywords ) == false )
                 continue;
 
+                if( $item->owner_id < 0 && !isset( $item->signer_id ) )
+                {
+                    //пытаемся найти в тексте ссылку на автора
+                    $c = preg_match_all( '/https?:\/\/vk.com\/(?!wall|topic)\S+/', $item->text , $matches );
+                    if( $c == 1 )
+                    {
+                        $domain = preg_replace( '/(https:\/\/vk.com\/)/', '', $matches[0][0] );
+                        $item->signer_id = $this->get_user_id_by_domain( $domain );
+                    }
+                }
+
                 //добавляем перенос строки перед элементом нумерованного списка
                 $item->text = preg_replace( '/(\d\.)[^\d]/', '<br>$1', $item->text );
 
@@ -84,6 +96,8 @@ class mcUpdateController extends mcBaseController
 
                 //replace [id123456|имя] на ссылку на профиль
                 $item->text = preg_replace( '/\[(id[\d]*)\|(\S.*)\]/', '<a href="https://vk.com/$1">$2</a>', $item->text );
+
+
 /*
             $post_type = $item->post_type;
             $comments = $item->comments;
@@ -100,20 +114,11 @@ class mcUpdateController extends mcBaseController
             //отправляем персональные сообщения
             if( $this->settings->send_proposal )
             {
-                $message = mcProposal::all()->random(1);
+                $sent = $this->sendMessageToPostOwner( $post );
 
-                if( isset( $post->signer_id ) )
-                {
-
-                    // $sent = $this->sendMessage( $post->signer_id , $message->text );
-                }
-                else if( $post->owner_id > 0 )
-                {
-                    //$sent = $this->sendMessage( $post->owner_id, $message->text );
-                }
+                if ( isset( $sent ) )
+                    $post->sent = true;
             }
-            if ( isset( $sent ) )
-                $post->sent = true;
 
             $post->save();
             array_push( $posts, $post );
@@ -158,28 +163,78 @@ class mcUpdateController extends mcBaseController
         }
         return false;
     }
-
 /*------------------------------------------------------------------------------
 *
 *
 *
 *-------------------------------------------------------------------------------
 */
-    public function sendMessage( $id, $message )
+    private function get_user_id_by_domain( $domain )
+    {
+        $content = Curl::to('https://api.vk.com/method/users.get' )
+                    ->withData([ 'user_ids' => $domain, 'v' => '5.52' ] )
+                    ->withOption( 'USERAGENT', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; ru-RU; rv:1.7.12) Gecko/20050919 Firefox/1.0.7' )
+                    ->get();
+
+        $content = json_decode( $content );
+
+        if ( !isset( $content ) || isset( $content->error ) )
+            return 0;
+
+        return $content->response[0]->id;
+    }
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
+    public function getSendMesage( Request $request, $id )
+    {
+        $sent = $this->sendMessageToPostOwner( null, $id );
+        $msg = isset( $sent ) ? "Сообщение отправлено" : 'Ошибка при отправке сообщения';
+        return redirect()->back()->with( 'msg', $msg );
+    }
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
+    private function sendMessageToPostOwner( $post, $user_id = null )
     {
         //*https://api.vk.com/method/messages.send?user_id=6269901&message=habrahabr&v=5.37&access_token=000000*/
         //token - 96b974f939195cfd6660abb4073b43f8d3fb41529ffe9b287137953a776a52e36b5e4ee089027548c4842
-        //$settings = mcSettings::first();
+
         if ( !isset( $this->settings->access_token ) && !$this->settings->send_proposal )
             return false;
 
+        if( isset( $post->signer_id ) && !isset( $user_id ) )
+        {
+            $id = $post->signer_id;
+        }
+        else if( isset( $post) && $post->owner_id > 0 && !isset( $user_id ) )
+        {
+            $id = $post->owner_id;
+        }
+        else if( isset( $user_id ) )
+        {
+            $id = $user_id;
+        }
+        else
+        {
+            return false;
+        }
+        //$id = '182920738';
+        $message = mcProposal::all()->random(1);
+
         $response = Curl::to('https://api.vk.com/method/messages.send')
-                ->withData(['user_id' => $id, 'message' => $message, 'v' => '5.52', 'access_token' => $settings->access_token ])
+                ->withData(['user_id' => $id, 'message' => $message->text, 'v' => '5.52', 'access_token' => $this->settings->access_token ])
                 ->post();
 
         $response = json_decode( $response );
 
-        if ( isset( $response->error ) )
+        if (  isset( $response->error ) )
         {
             return false;
         }

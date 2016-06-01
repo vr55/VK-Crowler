@@ -42,9 +42,9 @@ Route::group( [ 'middleware' => 'sentinel.auth'], function () {
 
 	Route::get( 'post/delete/{id}', ['as' => 'post.delete', 'uses' => 'mcIndexController@getDeletePost'] )->where( 'id', '[0-9]+' );
 
+	Route::get( 'message/to/{id}', ['as' => 'message', 'uses' => 'mcUpdateController@getSendMesage'] )->where( 'id', '[0-9]+' );
+
 });
 //Route::get( 'mail', ['uses' => 'mcUpdateController@sendMail']);
-/*
-Route::get( 'message', ['uses' => 'mcUpdateController@sendMessage']);
 
-*/
+//Route::get( 'message/{id}/{message}', ['uses' => 'mcUpdateController@sendMessage']);

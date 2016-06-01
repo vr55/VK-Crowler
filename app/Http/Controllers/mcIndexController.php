@@ -58,6 +58,12 @@ class mcIndexController extends mcBaseController
         return redirect()->route('keywords');
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getDeleteKeyword( Request $request, $id )
     {
         $keyword = mcKeywords::find( $id );
@@ -68,12 +74,24 @@ class mcIndexController extends mcBaseController
         return redirect()->route( 'keywords' )->with( 'msg', 'Удалено' );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getComunities()
     {
         $comunities = mcComunities::paginate(15);
         return view( 'comunities', ['comunities' => $comunities] );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function postComunities( Request $request )
     {
         $this->validate( $request, [
@@ -99,9 +117,15 @@ class mcIndexController extends mcBaseController
 
         $comunitie->save();
 
-        return redirect()->route( 'comunities' );
+        return redirect()->back()->with( 'msg', 'Добавлено' );
     }
 
+    /*------------------------------------------------------------------------------
+    *
+    *
+    *
+    *-------------------------------------------------------------------------------
+    */
     public function getDeleteComunity( Request $request, $id )
     {
         $comunity = mcComunities::find( $id );
@@ -111,6 +135,12 @@ class mcIndexController extends mcBaseController
         return redirect( 'comunities' )->with( 'msg', 'Удалено' );
     }
 
+    /*------------------------------------------------------------------------------
+    *
+    *
+    *
+    *-------------------------------------------------------------------------------
+    */
     public function getSettings()
     {
         $settings = mcSettings::first();
@@ -118,6 +148,12 @@ class mcIndexController extends mcBaseController
         return view( 'settings', [ 'settings' => $settings ] );
     }
 
+    /*------------------------------------------------------------------------------
+    *
+    *
+    *
+    *-------------------------------------------------------------------------------
+    */
     public function postSettings( Request $request )
     {
         $this->validate( $request, [
@@ -165,6 +201,12 @@ class mcIndexController extends mcBaseController
         return redirect()->route( 'proposal' );
     }
 
+    /*------------------------------------------------------------------------------
+    *
+    *
+    *
+    *-------------------------------------------------------------------------------
+    */
     public function getDeleteProposal( Request $request, $id )
     {
         $proposal = mcProposals::findOrFail( $id );
@@ -173,11 +215,17 @@ class mcIndexController extends mcBaseController
         return redirect()->back()->with( 'msg', 'Удалено' );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getDeletePost( Request $request, $id )
     {
         $post = mcPosts::findOrFail( $id );
         $post->delete();
-        
+
         return redirect()->back()->with( 'msg', 'Удалено' );
     }
 /*------------------------------------------------------------------------------

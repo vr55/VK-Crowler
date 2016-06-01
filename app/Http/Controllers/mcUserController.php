@@ -18,7 +18,12 @@ class mcUserController extends mcBaseController
 {
     protected $users;
     protected $user;
-
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function __construct()
 	{
 		parent::__construct();
@@ -65,11 +70,23 @@ class mcUserController extends mcBaseController
 
 	}
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getLogin()
     {
         return view( 'login' );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function postLogin( Request $request )
     {
         $this->validate( $request, [
@@ -119,18 +136,30 @@ class mcUserController extends mcBaseController
     	return view( 'home' );
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function getLogout( Request $request )
     {
         Sentinel::logout();
         return redirect()->route('home');
     }
 
+/*------------------------------------------------------------------------------
+*
+*
+*
+*-------------------------------------------------------------------------------
+*/
     public function postRegister( Request $request )
     {
         $settings = mcSettings::firstOrFail();
         if ( isset( $settings->register_deny ) )
             return redirect()->route( 'login' )->with( 'msg', 'Регистрация новых пользователей запрещеена' );
-            
+
         $this->validate( $request, [
                 'uName' => 'required|email',
                 'uPassword' => 'required',
@@ -160,8 +189,6 @@ class mcUserController extends mcBaseController
             return redirect()->route( 'home' );
 
         }
-
-
 
     }
 }
