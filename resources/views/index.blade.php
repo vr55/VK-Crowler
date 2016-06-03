@@ -43,12 +43,12 @@
               <div class="row">
                   <div class="col-md-12">
                     @if( $post->from_id > 0 && $post->sent == 0 )
-                        <a href={{ route( 'message', $post->from_id ) }} class="btn btn-primary btn-xs">отправить сообщение</a>
+                        <a href={{ route( 'message', $post->from_id ) }} class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-share-alt"></span> отправить сообщение</a>
                     @elseif( $post->signer_id != 0 && $post->sent == 0 )
-                        <a href={{ route( 'message', $post->signer_id )}} class="btn btn-primary btn-xs">отправить сообщение</a>
+                        <a href={{ route( 'message', $post->signer_id )}} class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-share-alt"></span> отправить сообщение</a>
 
                     @endif
-                    <a href={{ route( 'post.delete', $post->id ) }} class="btn btn-danger btn-xs">удалить</a>
+                    <a href={{ route( 'post.delete', $post->id ) }} class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> удалить</a>
                   </div>
 
               </div>

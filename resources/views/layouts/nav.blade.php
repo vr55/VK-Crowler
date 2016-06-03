@@ -8,7 +8,7 @@
       </button>
 
       <a class="navbar-brand" href="/"><img style="display: inline; margin-top: -15px" src="http://www.monochromatic.ru/mc_logo32.png" alt="monochromatic logo" />
-         <span> VK&nbsp;Crowler <span style="font-size: 10px">v0.1b</span>
+         <span> VK&nbsp;Crawler <span style="font-size: 10px">v0.1b</span>
             <div style="font-size:10px; margin-top:-7px;">by monochromatic</div>
         </span>
     </a>

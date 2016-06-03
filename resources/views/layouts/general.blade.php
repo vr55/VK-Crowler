@@ -54,7 +54,7 @@
     <div class="container">
       <div class="row copyright-img">
         <div class="col-lg-4 col-sm-4">
-			<a href="http://www.monochromatic.ru"><img src="http://www.monochromatic.ru/mc_logo32.png" alt="monochromatic logo" /></a> Copyright © 2016-{{date('Y')}} <a href="http://www.monochromatic.ru">Monochromatic</a>
+			<a href="http://www.monochromatic.ru"><img src="http://www.monochromatic.ru/mc_logo32.png" alt="monochromatic logo" /></a> Copyright © 2016-{{date('Y')}} by <a href="http://www.monochromatic.ru">Monochromatic</a>
 		</div>
       </div>
     </div>

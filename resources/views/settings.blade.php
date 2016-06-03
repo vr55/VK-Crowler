@@ -77,6 +77,25 @@
 
             <tr>
                 <td colspan="2">
+                    <h2>XMPP/Jabber</h2><span><a href={{ route( 'xmpp' ) }}>проверить</a></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ Form::label( 'xmpp идентификатор администратора' ) }}
+                    <div style="font-size:10px; color: #777777; width:250px">xmpp адрес администратора, на который отправляется информация о новых сообщениях.
+                        Зарегистрировать можно на <a target="_blank" href="http://www.jabber.ru">http://www.jabber.ru</a>
+                    </div>
+                </td>
+                <td>
+                    <div>{{ Form::text( 'xmpp', null, ['placeholder' => 'myname@jubber.ru'] ) }}</div>
+                    <div>{{ Form::text( 'xmpp2', null, ['placeholder' => 'myname@jubber.ru'] ) }}</div>
+                    <div>{{ Form::text( 'xmpp3', null, ['placeholder' => 'myname@jubber.ru'] ) }}</div>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
                     <h2>Параметры сканирования</h2>
                 </td>
             </tr>

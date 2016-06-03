@@ -23,7 +23,7 @@ Route::group( [ 'middleware' => 'sentinel.auth'], function () {
 	Route::get( '/', ['as' => 'home', 'uses' => 'mcIndexController@getIndex']);
 	Route::get( 'logout', ['as' => 'logout', 'uses' => 'mcUserController@getLogout'] );
 
-    Route::get( 'update', ['as' =>'update', 'uses' => 'mcUpdateController@getData'] );
+
 
 	Route::get( 'keywords', ['as' => 'keywords', 'uses' => 'mcIndexController@getKeywords']);
 	Route::post( 'keywords', ['as' => 'keywords', 'uses' => 'mcIndexController@postKeywords']);
@@ -42,9 +42,14 @@ Route::group( [ 'middleware' => 'sentinel.auth'], function () {
 
 	Route::get( 'post/delete/{id}', ['as' => 'post.delete', 'uses' => 'mcIndexController@getDeletePost'] )->where( 'id', '[0-9]+' );
 
-	Route::get( 'message/to/{id}', ['as' => 'message', 'uses' => 'mcUpdateController@getSendMesage'] )->where( 'id', '[0-9]+' );
+	Route::get( 'message/to/{id}', ['as' => 'message', 'uses' => 'mcUpdateController@getSendMessage'] )->where( 'id', '[0-9]+' );
+
+	Route::get( 'xmpp', ['as' =>'xmpp', 'uses' => 'mcXmppController@getSendMessage'] );
 
 });
+	Route::get( 'update', ['as' =>'update', 'uses' => 'mcUpdateController@getData'] );
+
+//	Route::get( 'xmpp', ['uses' => 'mcXmppController@getSendMessage'] );
 //Route::get( 'mail', ['uses' => 'mcUpdateController@sendMail']);
 
 //Route::get( 'message/{id}/{message}', ['uses' => 'mcUpdateController@sendMessage']);

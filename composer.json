@@ -10,7 +10,8 @@
         "cartalyst/sentinel": "2.0.*",
         "hautelook/phpass": "0.3.0",
         "laravelcollective/html": "^5.2",
-        "ixudra/curl": "6.*"
+        "ixudra/curl": "6.*",
+	"fabiang/xmpp": "*"
 
     },
     "require-dev": {
